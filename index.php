@@ -19,11 +19,50 @@ function generateNumber()
     return rand(1, 100);
 }
 
+function provideHint($number, $guess, $hintsUsed, $lowRange, $highRange, &$hintsGiven)
+{
+    $hints = [
+        function ($number, $guess) use (&$hintsGiven) {
+
+            if (!in_array('parity', $hintsGiven)) {
+                $hintsGiven[] = 'parity';
+                return ($number % 2 === 0) ? "\nHint: The number is even.\n" : "\nHint: The number is odd.\n";
+            }
+            return '';
+        },
+        function ($number, $guess) use ($lowRange, $highRange) {
+
+            $rangeWidth = intval(($highRange - $lowRange) / 4);
+            $lowerBound = max($lowRange, $number - $rangeWidth);
+            $upperBound = min($highRange, $number + $rangeWidth);
+            return "\nHint: The number is between $lowerBound and $upperBound.\n";
+        }
+    ];
+
+    $hintIndex = $hintsUsed % count($hints);
+    $hint = $hints[$hintIndex]($number, $guess);
+
+    if ($hint === '') {
+        $hintIndex = ($hintIndex + 1) % count($hints);
+        $hint = $hints[$hintIndex]($number, $guess);
+    }
+
+    return $hint;
+}
+
+
 function playGame($option, $number, $guess)
 {
     $chances = ($option === 1) ? 10 : (($option === 2) ? 5 : 3);
 
+    $lowRange = 1;
+    $highRange = 100;
+
     $startTime = microtime(true);
+
+    $hintsUsed = 0;
+
+    $hintsGiven = [];
 
     for ($i = 1; $i < $chances; $i++) {
         if ($guess === $number) {
@@ -36,9 +75,14 @@ function playGame($option, $number, $guess)
             break;
         } elseif ($guess > $number) {
             echo "\n Incorrect! The number is less than $guess. Try again.\n";
+            $highRange = $guess - 1;
         } else {
             echo "\n Incorrect! The number is greater  than $guess. Try again.\n";
+            $lowRange = $guess + 1;
         }
+
+        $hint = provideHint($number, $guess, $hintsUsed, $lowRange, $highRange, $hintsGiven);
+        echo $hint;
 
         echo "\nEnter your guess: ";
         $guess = (int) fgets(STDIN);
