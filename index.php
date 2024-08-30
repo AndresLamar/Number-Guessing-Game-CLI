@@ -30,9 +30,9 @@ function provideHint($number, $guess, $hintsUsed, $lowRange, $highRange, &$hints
             }
             return '';
         },
-        function ($number, $guess) use ($lowRange, $highRange) {
+        function ($number, $guess) use ($lowRange, $highRange, $hintsUsed) {
 
-            $rangeWidth = intval(($highRange - $lowRange) / 4);
+            $rangeWidth = intval(($highRange - $lowRange) / max(2, $hintsUsed + 2));
             $lowerBound = max($lowRange, $number - $rangeWidth);
             $upperBound = min($highRange, $number + $rangeWidth);
             return "\nHint: The number is between $lowerBound and $upperBound.\n";
@@ -40,18 +40,26 @@ function provideHint($number, $guess, $hintsUsed, $lowRange, $highRange, &$hints
     ];
 
     $hintIndex = $hintsUsed % count($hints);
-    $hint = $hints[$hintIndex]($number, $guess);
+    $hint = $hints[$hintIndex]($number, $guess, $lowRange, $highRange);
 
     if ($hint === '') {
         $hintIndex = ($hintIndex + 1) % count($hints);
-        $hint = $hints[$hintIndex]($number, $guess);
+        $hint = $hints[$hintIndex]($number, $guess, $lowRange, $highRange);
     }
+
+    // $hintIndex = $hintsUsed % count($hints);
+    // $hint = $hints[$hintIndex]($number, $guess);
+
+    // if ($hint === '') {
+    //     $hintIndex = ($hintIndex + 1) % count($hints);
+    //     $hint = $hints[$hintIndex]($number, $guess);
+    // }
 
     return $hint;
 }
 
 
-function playGame($option, $number, $guess)
+function playGame($option, $number, $guess, $showHints)
 {
     $chances = ($option === 1) ? 10 : (($option === 2) ? 5 : 3);
 
@@ -77,12 +85,17 @@ function playGame($option, $number, $guess)
             echo "\n Incorrect! The number is less than $guess. Try again.\n";
             $highRange = $guess - 1;
         } else {
-            echo "\n Incorrect! The number is greater  than $guess. Try again.\n";
+            echo "\n Incorrect! The number is greater than $guess. Try again.\n";
             $lowRange = $guess + 1;
         }
 
-        $hint = provideHint($number, $guess, $hintsUsed, $lowRange, $highRange, $hintsGiven);
-        echo $hint;
+
+
+        if ($showHints === 'y' || $showHints === 'Y' || $showHints === 'yes') {
+            $hintsUsed++;
+            $hint = provideHint($number, $guess, $hintsUsed, $lowRange, $highRange, $hintsGiven);
+            echo $hint;
+        }
 
         echo "\nEnter your guess: ";
         $guess = (int) fgets(STDIN);
@@ -107,12 +120,15 @@ do {
 
     echo "\n" . $output . "\n" . "Let's start the game!\n";
 
+    echo "\n(Show hints? (y/n)): ";
+    $showHints = trim(fgets(STDIN));
+
     echo "\nEnter your guess: ";
     $guess = (int) fgets(STDIN);
 
     $number = generateNumber();
 
-    playGame($option, $number, $guess);
+    playGame($option, $number, $guess, $showHints);
 
 
     echo "\nDo you want to play again? (y/n): ";
