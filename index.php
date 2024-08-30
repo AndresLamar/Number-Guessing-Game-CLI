@@ -16,16 +16,23 @@ function showMenu()
 
 function generateNumber()
 {
-    return rand(1, 3);
+    return rand(1, 100);
 }
 
 function playGame($option, $number, $guess)
 {
     $chances = ($option === 1) ? 10 : (($option === 2) ? 5 : 3);
 
-    for ($i = 0; $i < $chances - 1; $i++) {
+    $startTime = microtime(true);
+
+    for ($i = 1; $i < $chances; $i++) {
         if ($guess === $number) {
+
+            $endTime = microtime(true);
+            $elapsedTime = $endTime - $startTime;
+
             echo "\nCongratulations! You guessed the correct number in " . ($i + 1) . " attempts.\n";
+            echo "It took you " . round($elapsedTime, 2) . " seconds.\n";
             break;
         } elseif ($guess > $number) {
             echo "\n Incorrect! The number is less than $guess. Try again.\n";
@@ -37,7 +44,7 @@ function playGame($option, $number, $guess)
         $guess = (int) fgets(STDIN);
     }
 
-    if ($i === $chances - 1) {
+    if ($i === $chances) {
         echo "\nSorry, you ran out of chances. The correct number was $number.\n";
     }
 }
