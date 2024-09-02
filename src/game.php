@@ -186,21 +186,6 @@ class Game
         $this->saveToJson($this->records);
     }
 
-    // public function showHighScores()
-    // {
-    //     if (empty($this->records)) {
-    //         return "No high scores found.\n";
-    //     }
-
-    //     $easy = $this->getHighScore(1);
-    //     $medium = $this->getHighScore(2);
-    //     $hard = $this->getHighScore(3);
-
-    //     echo "Easy: " . ($easy === null ? "No high score yet." : $easy) . "\n";
-    //     echo "Medium: " . ($medium === null ? "No high score yet." : $medium) . "\n";
-    //     echo "Hard: " . ($hard === null ? "No high score yet." : $hard) . "\n";
-    // }
-
     public function showHighScores()
     {
         if (empty($this->records)) {
