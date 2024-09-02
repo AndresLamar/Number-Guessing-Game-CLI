@@ -13,9 +13,14 @@ do {
         break;
     }
 
-    // if ($option === 4) {
-    //     echo '\nHigh Scores:\n';
-    // }
+    if ($option === 4) {
+        $game->showHighScores();
+
+        echo "Presione una tecla para continuar...";
+        fgets(STDIN);
+        continue;
+    }
+
 
     $output = match ($option) {
         1 => "Great! You have selected the Easy difficulty level.",

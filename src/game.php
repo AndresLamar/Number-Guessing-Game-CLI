@@ -59,7 +59,7 @@ class Game
 
                 $highScore = $this->getHighScore($option);
 
-                if ($highScore === null || $totalAttempts < $highScore) {
+                if ($highScore === null || $totalAttempts < $highScore['attempts']) {
                     $this->updateHighScore($option, $totalAttempts, $elapsedTime);
                 }
 
@@ -137,14 +137,13 @@ class Game
 
         foreach ($this->records as $record) {
             if ($record['difficulty'] === $difficulty) {
-                if ($bestScore === null || $record['attempts'] < $bestScore->attempts) {
+                if ($bestScore === null || $record['attempts'] < $bestScore['attempts']) {
                     $bestScore = $record;
                 }
             }
         }
 
-
-        return $bestScore->attempts ?? null;
+        return $bestScore ?? null;
     }
 
     public function saveToJson($records)
@@ -153,7 +152,7 @@ class Game
         file_put_contents($this->file, $json);
     }
 
-    function updateHighScore($option, $attempts, $time)
+    public function updateHighScore($option, $attempts, $time)
     {
         $difficulty = match ($option) {
             1 => 'easy',
@@ -185,5 +184,47 @@ class Game
 
         // Guardar los registros actualizados
         $this->saveToJson($this->records);
+    }
+
+    // public function showHighScores()
+    // {
+    //     if (empty($this->records)) {
+    //         return "No high scores found.\n";
+    //     }
+
+    //     $easy = $this->getHighScore(1);
+    //     $medium = $this->getHighScore(2);
+    //     $hard = $this->getHighScore(3);
+
+    //     echo "Easy: " . ($easy === null ? "No high score yet." : $easy) . "\n";
+    //     echo "Medium: " . ($medium === null ? "No high score yet." : $medium) . "\n";
+    //     echo "Hard: " . ($hard === null ? "No high score yet." : $hard) . "\n";
+    // }
+
+    public function showHighScores()
+    {
+        if (empty($this->records)) {
+            return "No high scores found.\n";
+        }
+
+        $scores = [
+            'Easy' => $this->getHighScore(1),
+            'Medium' => $this->getHighScore(2),
+            'Hard' => $this->getHighScore(3),
+        ];
+
+        echo str_repeat("=", 30) . "\n";
+        echo "       HIGH SCORES       \n";
+        echo str_repeat("=", 30) . "\n";
+
+        foreach ($scores as $difficulty => $score) {
+            if ($score === null) {
+                echo "$difficulty: No high score yet.\n";
+            } else {
+                echo "$difficulty: Attempts: {$score['attempts']} | Time: {$score['time']} seconds\n";
+            }
+        }
+
+        echo str_repeat("=", 30) . "\n";
     }
 }
