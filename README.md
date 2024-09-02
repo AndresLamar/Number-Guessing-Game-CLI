@@ -38,9 +38,9 @@ Esta es una aplicación de consola en PHP en la que el jugador intenta adivinar 
 
 Para ejecutar la aplicación, abre tu terminal, navega al directorio donde está el proyecto y ejecuta el siguiente comando:
 
-    ```bash
-    php index.php
-    ```
+```bash
+php index.php
+```
 
 ## Menú Principal
 
